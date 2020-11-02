@@ -1,4 +1,4 @@
-package com.springboot30day.springboot30day;
+package com.springboot30day;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
