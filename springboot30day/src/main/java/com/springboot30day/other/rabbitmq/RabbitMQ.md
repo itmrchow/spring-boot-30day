@@ -251,7 +251,9 @@ public class Consumer {
 
 # 5. RabbitMQ工作模式
 ## 5.1 Work queues 工作序列模式
-### 5.1.1 模式說明
-#### 生產者將訊息放入序列中,會有多個Consumers
-#### **應用場景**：對任務過重或任務較多的情況使用Work queues可以提高任務處理速度
+![工作序列模式](https://www.rabbitmq.com/img/tutorials/python-two.png)
+###  模式說明
+* Producer將訊息放入序列中,會有多個Consumers
+* **應用場景**：對任務過重或任務較多的情況使用Work queues可以提高任務處理速度
+* **一個序列**有**多個消費者**,消費者對於同一個訊息為競爭關係 (A用B不用,B用A不用)
 

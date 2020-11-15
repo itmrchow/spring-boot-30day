@@ -1,4 +1,4 @@
-package com.springboot30day.other.rabbitmq.simple;
+package com.springboot30day.other.rabbitmq.work_queues;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -9,8 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 // 生產者
 public class Producer {
+    public static final String QUEUE_NAME = "work_queue";
 
-    public static final String QUEUE_NAME = "simple_queue";
     public static void main(String[] args) {
 
         try (
@@ -33,10 +33,14 @@ public class Producer {
              */
             channel.queueDeclare(QUEUE_NAME, true, false, false, null);
 
-            // 發送訊息
-            String msg = "安安你好";
-            channel.basicPublish("", QUEUE_NAME, null, msg.getBytes());
-            log.info("已發送訊息:" + msg);
+            // 發送30條訊息
+            for (int i = 1; i <= 30; i++) {
+                // 發送訊息
+                String msg = "安安你好--訊息:" + i;
+                channel.basicPublish("", QUEUE_NAME, null, msg.getBytes());
+                log.info("已發送訊息:" + msg);
+
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

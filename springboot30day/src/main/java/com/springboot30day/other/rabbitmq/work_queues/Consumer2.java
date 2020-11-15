@@ -1,4 +1,4 @@
-package com.springboot30day.other.rabbitmq.simple;
+package com.springboot30day.other.rabbitmq.work_queues;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -14,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 //消費者
 @Slf4j
-public class Consumer {
-    public static final String QUEUE_NAME = "simple_queue";
+public class Consumer2 {
+    public static final String QUEUE_NAME = "work_queue";
 
     public static void main(String[] args) throws IOException, TimeoutException {
         // 建立連接
@@ -37,6 +37,7 @@ public class Consumer {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body)
                     throws IOException {
+                log.info("---Consumer2 start---");
                 // routingkey
                 log.info(envelope.getRoutingKey());
                 // exchange
@@ -45,6 +46,13 @@ public class Consumer {
                 log.info(String.valueOf(envelope.getDeliveryTag()));
                 // 訊息
                 log.info(new String(body, "UTF-8"));
+
+                try {
+                    Thread.sleep(1000);// 1秒
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                log.info("---Consumer2 end---");
             }
         };
 

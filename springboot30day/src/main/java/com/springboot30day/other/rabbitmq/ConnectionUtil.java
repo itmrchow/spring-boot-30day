@@ -7,7 +7,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class ConnectionUtil {
-    public static final String QUEUE_NAME = "simple_queue";
+    
     static final String HOST = "127.0.0.1";
     static final int PORT = 5672;
 
