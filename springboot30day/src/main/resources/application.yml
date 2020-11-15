@@ -11,3 +11,6 @@ spring:
         show-sql: true
         generate-ddl: false
         
+spring.cache.cache-names: getTime,currentTimeMillis
+#CaffeineSpec:Caffeine建置規範, expireAfterWrite 持續時間
+spring.cache.caffeine.spec: maximumSize=100,expireAfterWrite=5s
