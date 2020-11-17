@@ -249,6 +249,7 @@ public class Consumer {
     6. 關閉channel
     7. 關閉Connection
 
+
 # 5. RabbitMQ工作模式
 ## 5.1 Work queues 工作序列模式
 ![工作序列模式](https://www.rabbitmq.com/img/tutorials/python-two.png)
@@ -256,4 +257,38 @@ public class Consumer {
 * Producer將訊息放入序列中,會有多個Consumers
 * **應用場景**：對任務過重或任務較多的情況使用Work queues可以提高任務處理速度
 * **一個序列**有**多個消費者**,消費者對於同一個訊息為競爭關係 (A用B不用,B用A不用)
+<br>
 
+## 5.2 Subscribe 訂閱模式類型
+![訂閱模式](https://www.rabbitmq.com/img/tutorials/python-three.png)
+### 模式說明
+* P：Producer,發送訊息給Exchange
+* C：Consumer,等候訊息進來
+* X：Exchange,接收Producer發送訊息,處理訊息(如：傳遞給某個特別序列、傳遞給所有序列、丟棄序列)，訊息處理操作取決於Exchange的類型
+    * Fanout：廣播,將訊息傳給所有綁定Exchange的Queue
+    * Direct：導向,將訊息傳給指定Routing key的Queue
+    * Topic：主題,將訊息傳給符合Routing pattern(路由模式)的序列
+* **應用場景**：把一個訊息同時發布給多台機器
+#### **Exchange 只負責轉發訊息,不具備儲存能力**,如果沒有任何序列與exchange綁定,或沒有符合規則的路由規則的序列,訊息會遺失
+<br>
+
+
+## 5.3 Publish/Subscibe 發布與訂閱模式
+1. Consume監聽自己的序列
+2. Producer將訊息傳給Broker,由Exchange將訊息轉發給綁定的每個序列,每個序列都將被接收到Producer傳輸的訊息
+3. 與Work Queues的差別
+    * Work Queues 不用定義 Exchange ; Publish/Subscibe 需要
+    * Work Queues 是向 Consume發送訊息 (其實為default exchange) ; Publish/Subscibe 是向 exchange發送
+    * Work Queues 不用設定queues與exchange綁定,會使用默認 ; Publish/Subscibe需要進行綁定
+<br>
+
+## 5.4 Routing 路由模式
+1. 指定一個 RoutingKey
+2. 訊息發送給 Exchange 時,需指定訊息的 RoutingKey
+3. Exchange 會根據訊息的 RoutingKey ,來發送訊息給序列,當 Exchange 與 Queue 的 RoutingKey 一致,才會收到訊息
+
+![路由模式](https://www.rabbitmq.com/img/tutorials/python-four.png)
+* P：Producer,發送訊息給Exchange,發送時會指定一個RoutingKey
+* X：Exchange,接收Producer發送訊息,將訊息傳送給與RoutingKey相符的Queue
+* C1：Consumer,指定'error'的RoutingKey的訊息
+* C1：Consumer,指定'info','error','warning'的RoutingKey的訊息
