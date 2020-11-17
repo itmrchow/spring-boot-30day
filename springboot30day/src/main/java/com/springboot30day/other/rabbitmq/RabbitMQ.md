@@ -267,7 +267,7 @@ public class Consumer {
 * X：Exchange,接收Producer發送訊息,處理訊息(如：傳遞給某個特別序列、傳遞給所有序列、丟棄序列)，訊息處理操作取決於Exchange的類型
     * Fanout：廣播,將訊息傳給所有綁定Exchange的Queue
     * Direct：導向,將訊息傳給指定Routing key的Queue
-    * Topic：主題,將訊息傳給符合Routing pattern(路由模式)的序列
+    * Topic：通配符,將訊息傳給符合Routing pattern(路由模式)的序列
 * **應用場景**：把一個訊息同時發布給多台機器
 #### **Exchange 只負責轉發訊息,不具備儲存能力**,如果沒有任何序列與exchange綁定,或沒有符合規則的路由規則的序列,訊息會遺失
 <br>
@@ -292,3 +292,30 @@ public class Consumer {
 * X：Exchange,接收Producer發送訊息,將訊息傳送給與RoutingKey相符的Queue
 * C1：Consumer,指定'error'的RoutingKey的訊息
 * C1：Consumer,指定'info','error','warning'的RoutingKey的訊息
+<br>
+
+## 5.5 Topics 通配符
+* 和Direct相比,兩者皆可以透過RoutingKey把訊息Routing到不同的Queue;只不過Topic類型Exchange可以讓Queue綁定RoutingKey時使用通配符
+
+* RoutingKey 一般都是由一個或多個單字組成,多個單字間以"."分割,EX: item.insert
+
+![匹配模式](https://www.rabbitmq.com/img/tutorials/python-five.png)
+
+* 規則:
+    * item.# : 匹配一個或多個詞 -> item.insert.abc ,item.insert
+    * item.* : 匹配一個詞 ->  item.insert
+
+![TopicExchange](TopicExchange.jpg)
+
+## 5.6 模式總結
+### RabbitMQ工作模式：    
+1. 簡單模式 Simply
+    * 一個Producer,一個Consumer,使用默認Exchange不用額外設定
+2. 工作序列模式 Work Queue
+    * 一個Producer,多個Consumer(競爭關係),使用默認Exchange不用額外設定
+3. 發布訂閱模式 Publish/Subscribe
+    * 需設定fanout的Exchange,並與Queue綁定,發送訊息到Exchange後會送到綁定的Queue
+4. 路由模式 Routing
+    * 需設定direct的Exchange,並指定RoutingKey,當訊息送到Exchange後會根據RoutingKey將訊息發送給對應的Queue
+5. 通配符模式 Topic
+    * 需設定Topic的Exchange,並指定通配符的RoutingKey,當訊息送到Exchange後會根據RoutingKey將訊息發送給對應的Queue
