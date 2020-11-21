@@ -319,3 +319,13 @@ public class Consumer {
     * 需設定direct的Exchange,並指定RoutingKey,當訊息送到Exchange後會根據RoutingKey將訊息發送給對應的Queue
 5. 通配符模式 Topic
     * 需設定Topic的Exchange,並指定通配符的RoutingKey,當訊息送到Exchange後會根據RoutingKey將訊息發送給對應的Queue
+
+# 6. Spring Boot 整合 RabbitMQ
+## Producer
+1. application.yml 文件配置 RabbitMQ
+2. 寫config class , 建立exchange和queue並進行綁定
+3. 注入RabbitTemplate Object , 透過 RabbitTemplate發送訊息到exchange
+
+## Consumer
+1. application.yml 文件配置 RabbitMQ
+2. 寫Component來接收序列訊息處理

@@ -26,6 +26,12 @@
 			<version>5.10.0</version>
 		</dependency>
 
+		<!-- spring amqp -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-amqp</artifactId>
+		</dependency>
+
 
 		<!-- spring fox : swagger -->
 		<dependency>
@@ -121,7 +127,6 @@
 		</dependency> -->
 
 
-		
 	</dependencies>
 
 	<pluginRepositories>
