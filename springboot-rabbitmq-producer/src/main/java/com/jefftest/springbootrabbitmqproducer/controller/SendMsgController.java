@@ -2,6 +2,7 @@ package com.jefftest.springbootrabbitmqproducer.controller;
 
 import com.jefftest.springbootrabbitmqproducer.config.RabbitMQConfig;
 
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,3 +30,4 @@ public class SendMsgController {
     }
 
 }
+

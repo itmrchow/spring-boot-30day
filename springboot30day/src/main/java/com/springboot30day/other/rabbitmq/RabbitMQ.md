@@ -329,3 +329,86 @@ public class Consumer {
 ## Consumer
 1. application.yml 文件配置 RabbitMQ
 2. 寫Component來接收序列訊息處理
+
+# 7. 高級設定
+## 7.1 過期時間TTL
+### 可以對訊息設定預期時間，時間內都可以被Consumer給接收；超過時間將會被自動刪除，有兩種設定方式
+* 序列屬性設定,序列中所有訊息都有相同的過期時間
+* 對訊息單獨設定,每條訊息TTL可以不同
+### 若上述方法同時使用,則訊息以TTL較小的數值為準。
+### 一旦訊息生存時間超過TTL,就稱為dead message,Consumer將無法收到該訊息
+### 7.1.1 設定序列TTL
+```java
+    //宣告queue
+    @Bean("itemQueue")
+    public Queue iteQueue() {
+        return QueueBuilder.durable(ITEM_QUEUE).ttl(10000).build();
+    }
+```
+### 7.1.2 設定訊息TTL
+```java
+		MessageProperties msgProp = new MessageProperties();
+		msgProp.setExpiration("5000");
+
+		Message msg = new Message("測試設定序列ttl 5秒".getBytes(),msgProp);
+		rabbitTemplate.convertAndSend(RabbitMQConfig.ITEM_TOPIC_EXCHANGE, "item.update",msg);
+```
+
+## 7.2 死信序列
+### DLX(Dead-Letter-Exchange),當訊息在序列中變成dead message後,能被重新發送到另一個exchange,這個exchange就是DLX,綁定DLX的序列就稱為死信序列
+### 訊息變成Dead message有以下原因
+* 訊息被拒絕
+* 訊息過期
+* 序列達到最大長度
+### DLX也是正常的exchange,和一般exchange沒有區別,它可以被任何序列指定,實際上就是設定某一個對列的屬性。當序列存在dead message時,RabbitMQ會自動將訊息重新發布到設定的DLX上,進而路由到另一個序列,即死信序列
+### 7.2.1 設定DLX與DLQ
+```java
+    //DLX NAME
+    public static final String DL_EXCHANGE = "dead_exchange";
+    //DLQ NAME
+    public static final String DL_QUEUE = "my_dlx_queue";
+
+    // 宣告dead exchange
+    @Bean("deadExchange")
+    public Exchange deadExchange() {
+        return ExchangeBuilder.fanoutExchange(DL_EXCHANGE).durable(true).build();
+    }
+
+    // 宣告 指向exchange中的持久化dead queue
+    @Bean("myDLXQueue")
+    public Queue myDLXQueue() {
+        return QueueBuilder.durable(DL_QUEUE).build();
+    }
+
+    // 以deadLetterExchange設定DLX,將死訊息傳到DLX
+    @Bean("itemQueueTTL")
+    public Queue itemQueueTTL() {
+        return QueueBuilder.durable(ITEM_QUEUE_TTL)
+            // 設定Exchange
+            .deadLetterExchange(DL_EXCHANGE)
+            // ttl
+            .ttl(10000)
+            // 最大數
+            .maxLength(10).build();
+    }
+
+    // DLX綁定DLQ
+    @Bean
+    public Binding myDLXQueueDeadExchange(@Qualifier("myDLXQueue") Queue queue,
+            @Qualifier("deadExchange") Exchange exchange) {
+        return BindingBuilder.bind(queue).to(exchange).with("").noargs();
+    }
+
+```
+### 7.2.2 測試class
+```java
+	// 發送15筆資料到exchange
+	// 會有5筆送DLX (Queue maxlength = 10)
+	// 再送10筆到DLX (TTL = 10s)
+	@Test
+	void dlxTest() {
+		for (int i = 0; i < 15; i++) {
+			rabbitTemplate.convertAndSend(RabbitMQConfig.ITEM_TOPIC_EXCHANGE, "item.insert", "DLX Test msg:" + (i + 1));
+		}
+	}
+```
